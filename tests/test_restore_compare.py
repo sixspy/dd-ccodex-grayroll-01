@@ -26,6 +26,12 @@ def test_schedule_list():
 
 
 def test_restore_killed_flag():
+    # 共享 SQLite 库会被多轮跑测改写：先确保 flag4 回到夹具的 killed 初态，使测试可重复
+    from db import connect
+
+    with connect() as conn:
+        conn.execute("UPDATE flags SET status='killed' WHERE id=4")
+        conn.commit()
     with TestClient(app) as client:
         h = _h(client)
         # flag 4 is killed in seed
@@ -36,3 +42,7 @@ def test_restore_killed_flag():
         )
         assert r.status_code == 200, r.text
         assert r.json()["status"] == "active"
+    # 回滚到夹具初态，避免污染后续轮次
+    with connect() as conn:
+        conn.execute("UPDATE flags SET status='killed' WHERE id=4")
+        conn.commit()

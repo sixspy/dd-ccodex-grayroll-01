@@ -13,11 +13,23 @@ export const EnvsView = {
   template: `
   <div class="panel">
     <h2>环境</h2>
-    <p class="hint">风险等级越高，发布与熔断越敏感；生产环境默认需更谨慎的发布说明。</p>
+    <p class="hint">高风险环境（风险等级 ≥ 3，即 prod）封死乙路径：发布缺审批号只落影子草案、正式册零增，补号后原子升正。</p>
     <div class="err" v-if="err">{{ err }}</div>
     <table>
-      <thead><tr><th>代码</th><th>名称</th><th>风险等级</th></tr></thead>
-      <tbody><tr v-for="it in items" :key="it.id"><td>{{ it.code }}</td><td>{{ it.title }}</td><td>{{ it.risk_level }}</td></tr></tbody>
+      <thead><tr><th>代码</th><th>名称</th><th>风险等级</th><th>高风险</th><th>发布审批号</th></tr></thead>
+      <tbody>
+        <tr v-for="it in items" :key="it.id">
+          <td>{{ it.code }}</td><td>{{ it.title }}</td><td>{{ it.risk_level }}</td>
+          <td>
+            <span v-if="it.high_risk" style="color:#c0392b;font-weight:700">是</span>
+            <span v-else class="muted">否</span>
+          </td>
+          <td>
+            <span v-if="it.approval_required" style="color:#b3541e;font-weight:600">必需（缺号正式零增）</span>
+            <span v-else class="muted">免审批</span>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>`
 };

@@ -1,0 +1,45 @@
+{
+  "incident": "高风险 prod 且审批号为空的预置事故",
+  "description": "prod 被标记为高风险后，checkout.new_pay 的发布不带审批号也能落正式发布：求值已吃到新比例，但审计/历史中找不到任何审批痕迹。",
+  "env": {
+    "id": 3,
+    "code": "prod",
+    "title": "生产环境",
+    "risk_level": 3,
+    "high_risk": true,
+    "approval_required": true
+  },
+  "flag": {
+    "id": 1,
+    "key": "checkout.new_pay",
+    "title": "新支付链路"
+  },
+  "publish_request": {
+    "flag_id": 1,
+    "env_id": 3,
+    "kind": "percent",
+    "percent": 67,
+    "cohort_id": null,
+    "summary": "高风险缺审批号事故复现发布",
+    "use_shadow": false,
+    "approval_no": ""
+  },
+  "subject_key": "u-1001",
+  "approval_no_for_promote": "AP-2026-1126-0001",
+  "mutex_key_template": "flag-release:{flag_id}:{env_id}",
+  "expect_buggy": {
+    "official_release_rows_grow": true,
+    "official_rule_replaced": true,
+    "evaluation_sees_unapproved_percent": true,
+    "approval_trail": "missing"
+  },
+  "expect_fixed": {
+    "official_release_rows_grow": false,
+    "official_rule_untouched_before_promote": true,
+    "shadow_row_created": true,
+    "evaluation_keeps_official_percent_before_promote": true,
+    "promote_requires_approval_no": true,
+    "evaluation_version_matches_release_after_promote": true,
+    "approval_trail": "same_transaction_audit_and_history"
+  }
+}
